@@ -1,0 +1,115 @@
+version: '3.8'
+
+services:
+  service-config:
+    build: ./service-config
+    ports:
+      - "8080:8080"  # Port pour le service de configuration
+    environment:
+      - SPRING_APPLICATION_NAME=service-config
+      - SPRING_CLOUD_CONFIG_SERVER_GIT_URI=https://github.com/Paulzidane/cloud-conf
+    networks:
+      - microservices-network
+
+  service-register:
+    build: ./service-register
+    depends_on:
+      - service-config
+    #command: ["./wait-for-it.sh", "service-config:8080", "--strict", "--timeout=300", "java", "-jar", "/app/service-register.jar"]
+    environment:
+      - SPRING_APPLICATION_NAME=service-register
+      - SPRING_CLOUD_CONFIG_URI=http://service-config:8080  # Utilisation du nom de service
+      - SPRING_CONFIG_IMPORT=configserver:http://service-config:8080
+    ports:
+      - "8081:8761"  # Mappage du port 8761 à l'intérieur du conteneur vers le port 8081 sur l'hôte
+    networks:
+      - microservices-network
+
+  service-company:
+    build: ./service-company
+    depends_on:
+      - service-config
+      - service-register
+    #command: ["./wait-for-it", "service-config:8080", "--strict", "--timeout=300", "java", "-jar", "/app/service-company.jar"]
+    environment:
+      - SPRING_APPLICATION_NAME=service-company
+      - SPRING_CLOUD_CONFIG_URI=http://service-config:8080  # Utilisation du nom de service
+      - SPRING_CONFIG_IMPORT=configserver:http://service-config:8080
+    ports:
+      - "8083" # Port interne, ne pas mapper ici 
+      # Mappage du port 8083 à l'intérieur du conteneur vers le port 8180 sur l'hôte
+    networks:
+      - microservices-network
+  
+  service-user:
+    build: ./service-User  # Assurez-vous que le nom du dossier est correct
+    depends_on:
+      - service-config
+      - service-register
+    #command: ["./wait-for-it", "service-config:8080","--strict", "--timeout=300", "java", "-jar", "/app/service-User.jar"]
+    environment:
+      - SPRING_APPLICATION_NAME=service-User
+      - SPRING_CLOUD_CONFIG_URI=http://service-config:8080  # Utilisation du nom de service
+      - SPRING_CONFIG_IMPORT=configserver:http://service-config:8080
+    ports:
+      - "8181:8084"  # Mappage du port 8084 à l'intérieur du conteneur vers le port 8181 sur l'hôte
+    networks:
+      - microservices-network
+  
+  service-user1:
+    build: ./service-User  # Utilisez la même image que service-user
+    depends_on:
+      - service-config
+      - service-register
+    #command: ["./wait-for-it", "service-config:8080", "--strict", "--timeout=300", "java", "-jar", "/app/service-User.jar"]
+    environment:
+      - SPRING_APPLICATION_NAME=service-User
+      - SPRING_CLOUD_CONFIG_URI=http://service-config:8080  # Utilisation du nom de service
+      - SPRING_CONFIG_IMPORT=configserver:http://service-config:8080
+    ports:
+      - "8182:8084"  # Deuxième instance sur un port différent
+    networks:
+      - microservices-network
+
+  service-user2:
+    build: ./service-User  # Utilisez la même image que service-user
+    depends_on:
+      - service-config
+      - service-register
+    #command: ["./wait-for-it", "service-config:8080","--strict", "--timeout=300", "java", "-jar", "/app/service-User.jar"]
+    environment:
+      - SPRING_APPLICATION_NAME=service-User
+      - SPRING_CLOUD_CONFIG_URI=http://service-config:8080  # Utilisation du nom de service
+      - SPRING_CONFIG_IMPORT=configserver:http://service-config:8080
+    ports:
+      - "8183:8084"  # Troisième instance sur un port différent
+    networks:
+      - microservices-network
+
+  service-proxy:
+    build: ./service-proxy
+    depends_on:
+      - service-config
+      - service-register
+    #command: ["./wait-for-it", "service-config:8080", "--strict", "--timeout=300", "java", "-jar", "/app/service-proxy.jar"]
+    environment:
+      - SPRING_APPLICATION_NAME=service-proxy
+      - SPRING_CLOUD_CONFIG_URI=http://service-config:8080  # Utilisation du nom de service
+      - SPRING_CONFIG_IMPORT=configserver:http://service-config:8080
+    ports:
+      - "8082:8079"  # Mappage du port 8079 à l'intérieur du conteneur vers le port 8082 sur l'hôte
+    networks:
+      - microservices-network
+
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - "5672:5672"  # Port pour RabbitMQ
+      - "15672:15672"  # Port pour l'interface de gestion
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    driver: bridge
+

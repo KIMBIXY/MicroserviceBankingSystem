@@ -1,0 +1,42 @@
+apiVersion: apps/v1  
+kind: Deployment  
+metadata:  
+  name: service-proxy  
+  namespace: microservices  
+spec:  
+  replicas: 1  
+  selector:  
+    matchLabels:  
+      app: service-proxy  
+  template:  
+    metadata:  
+      labels:  
+        app: service-proxy  
+    spec:  
+      containers:  
+      - name: service-proxy  
+        image: paulzk/seminar-service-proxy:latest   # Remplacez par l'image de votre service proxy  
+        ports:  
+        - containerPort: 8079 # Remplacez par le port utilisé par le service proxy  
+        env:  
+        - name: SPRING_APPLICATION_NAME  
+          value: "service-proxy"  
+        - name: SPRING_CLOUD_CONFIG_URI  
+          value: "http://service-config:8080"  
+        - name: SPRING_CONFIG_IMPORT  
+          value: "configserver:http://service-config:8080"   
+
+---  
+apiVersion: v1  
+kind: Service  
+metadata:  
+  name: service-proxy  
+  namespace: microservices  
+spec:  
+  ports:  
+  - port: 8060 
+    targetPort: 8079  
+    protocol: TCP  
+  selector:  
+    app: service-proxy  
+  type: LoadBalancer
