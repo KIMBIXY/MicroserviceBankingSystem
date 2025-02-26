@@ -7,7 +7,7 @@ services:
       - "8080:8080"  # Port pour le service de configuration
     environment:
       - SPRING_APPLICATION_NAME=service-config
-      - SPRING_CLOUD_CONFIG_SERVER_GIT_URI=https://github.com/Paulzidane/cloud-conf
+      - SPRING_CLOUD_CONFIG_SERVER_GIT_URI=https://github.com/KIMBIXY/cloud-conf
     networks:
       - microservices-network
 
