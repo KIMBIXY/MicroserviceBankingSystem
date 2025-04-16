@@ -1,4 +1,15 @@
-package main.java.com.bank.transaction.query;
+package com.bank.transaction.query;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import com.bank.transaction.event.TransactionCreatedEvent;
+import com.bank.transaction.event.TransactionEventRepository;
+import com.bank.transaction.model.Transaction;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor

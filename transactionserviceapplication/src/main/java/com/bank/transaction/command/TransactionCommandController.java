@@ -1,10 +1,10 @@
-package main.java.com.bank.transaction.command;
+package com.bank.transaction.command;
 
 import java.math.BigDecimal;
 
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -15,13 +15,13 @@ import lombok.RequiredArgsConstructor;
 public class TransactionCommandController {
     private final TransactionCommandService transactionCommandService;
 
-    @RequestMapping("/deposit/{accountId}/{amount}")
-    public void deposit(@RequestParam("accountId") Long accountId, @RequestParam("amount") BigDecimal amount) {
-        transactionCommandService.deposit(accountId, amount);
+    @PostMapping("/deposit")
+    public void deposit(@RequestBody DepositRequest request) {
+        transactionCommandService.deposit(request.getAccountId(), request.getAmount());
     }
 
     @PostMapping("/withdraw")
-    public void withdraw(@RequestParam Long accountId, @RequestParam BigDecimal amount) {
-        transactionCommandService.withdraw(accountId, amount);
+    public void withdraw(@RequestBody WithdrawRequest request) {
+        transactionCommandService.withdraw(request.getAccountId(), request.getAmount());
     }
 }

@@ -1,4 +1,9 @@
-package main.java.com.bank.transaction.model;
+package com.bank.transaction.model;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import lombok.*;
 
 @Data
 @AllArgsConstructor

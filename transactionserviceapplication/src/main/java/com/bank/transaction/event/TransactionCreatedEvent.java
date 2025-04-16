@@ -1,4 +1,12 @@
-package main.java.com.bank.transaction.event;
+package com.bank.transaction.event;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
+import com.bank.transaction.model.TransactionType;
 
 @Entity
 @Table(name = "transaction_events")
